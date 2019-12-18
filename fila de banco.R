@@ -1,4 +1,5 @@
 library(simmer)
+library(simmer.plot)
 
 set.seed(1933)
 
@@ -44,9 +45,12 @@ bank %>% run(until = 900)
 resources <- get_mon_resources(bank)
 arrivals <- get_mon_arrivals(bank)
 
-p1=plot(resources, metric = "usage", "counter", items="server", step = TRUE)
+#p1=plot(resources, metric = "utilization")
 
-p2=plot(arrivals, metric = "flow_time",
-        items = c( "queue", "server"))
-library(gridExtra)
-grid.arrange(p1, p2)
+#p2=plot(arrivals, metric = "flow_time",
+#        c( "queue", "server"))
+
+#plot(customer,verbose = T)
+
+#library(gridExtra)
+#grid.arrange(p1)
