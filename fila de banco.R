@@ -16,7 +16,7 @@ customer <-
   log_(function() {
     paste("serving", get_attribute(bank, "start_server"))
   }) %>%
-  timeout(rexp(4, 1/20)) %>%
+  timeout(function() rexp(1, 1/20)) %>%
   release("counter") %>%
   log_(function() {paste("served", now(bank) - get_attribute(bank, "start_server"))}) %>%
   log_("Completed")
@@ -39,4 +39,4 @@ bank <-
   add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)}) %>%
   add_generator("Custome with priority", priority, function() {c(0, rexp(4, 1/10), -1)}, priority = 1)
 
-bank %>% run(until = 9000)
+bank %>% run(until = 900)
