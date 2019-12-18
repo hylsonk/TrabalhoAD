@@ -36,7 +36,17 @@ priority <-
 bank <-
   simmer("bank") %>%
   add_resource("counter") %>%
-  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)}) %>%
-  add_generator("Custome with priority", priority, function() {c(0, rexp(4, 1/10), -1)}, priority = 1)
+  add_generator("Customer", customer, function() {c(0, rexp(10, 1/10), -1)}) %>%
+  add_generator("Custome with priority", priority, function() {c(0, rexp(10, 1/10), -1)}, priority = 1)
 
 bank %>% run(until = 900)
+
+resources <- get_mon_resources(bank)
+arrivals <- get_mon_arrivals(bank)
+
+p1=plot(resources, metric = "usage", "counter", items="server", step = TRUE)
+
+p2=plot(arrivals, metric = "flow_time",
+        items = c( "queue", "server"))
+library(gridExtra)
+grid.arrange(p1, p2)
