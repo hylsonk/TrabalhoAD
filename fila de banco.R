@@ -8,49 +8,74 @@ doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, prior
     customer <-
       trajectory("Customer's path") %>%
       seize("server") %>%
-      timeout(rexp(1, mu1)) %>%
+      timeout(function(){rexp(1, mu1)}) %>%
       release("server")
     
-    priority <-
+    priorityCustomer <-
       trajectory("Custome with priority's path") %>%
       seize("server") %>%
-      timeout(rexp(1, mu2)) %>%
+      timeout(function(){rexp(1, mu2)}) %>%
       release("server")
     
     server <-
       simmer("server") %>%
       add_resource("server") %>%
-      add_generator("Customer", customer, function() {rexp(100, lambda1)}) %>%
-      add_generator("Custome with priority", priority, function() {rexp(100, lambda2)}) %>%
-      run(100)
-    arrivals <- get_mon_arrivals(server)
-    return(arrivals)
+      add_generator("Customer", customer, function() {rexp(1, lambda1)}) %>%
+      add_generator("Custome with priority", priorityCustomer, function() {rexp(1, lambda2)}, priority = priorityQueue) %>%
+      run(1000)
+    
+      print("----------------------------CUSTOMER----------------------------------")
+      print("arrivals")
+      arrivals <- get_mon_arrivals(server)
+      print(transform(arrivals, waiting_time = end_time - start_time - activity_time))
+      
+      print("----------------------------SERVER----------------------------------")
+      print("resources")
+      resources <- get_mon_resources(server)
+      print(transform(resources))
+      
+      
+      print("--------------------------------------------------------------")
+    
     i = i+1
   }
 }
 
-singleQueue <- function(n = 1, lambda = 1, mu1 = 1){
+singleQueue <- function(n = 1, lambda = 1, mu = 1){
   i <- 1
   while(i<n){
     customer <-
       trajectory("Customer's path") %>%
       seize("server") %>%
-      timeout(function() rexp(1, mu1)) %>%
+      timeout(function(){rexp(1, mu)}) %>%
       release("server")
     
     server <-
       simmer("server") %>%
       add_resource("server") %>%
-      add_generator("Customer", customer, function() rexp(1, lambda1)) %>%
-      run(100)
+      add_generator("Customer", customer, function() {rexp(1, lambda)}) %>%
+      run(1000)
+    
+    print("----------------------------CUSTOMER----------------------------------")
+    print("arrivals")
+    arrivals <- get_mon_arrivals(server)
+    print(transform(arrivals, waiting_time = end_time - start_time - activity_time))
+    
+    print("----------------------------SERVER----------------------------------")
+    print("resources")
+    resources <- get_mon_resources(server)
+    print(transform(resources))
+    
+    
+    print("--------------------------------------------------------------")
     
     i = i+1
   }
   
 }
 
-r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
+# r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
 
-r
+q <- singleQueue(n= 10, lambda = 0.05, mu = 0.5)
 
-singleQueue(1)
+q
