@@ -1,7 +1,8 @@
 f1 <- function(n) {
-  eixo_x <- numeric(n)
-  eixo_y <- numeric(n)
+  eixo_x <- numeric()
+  eixo_y <- numeric()
   for (i in 0:n) {
+    print(i)
     eixo_x[i] <- i
     eixo_y[i] <- (n-(i-1))
   }
