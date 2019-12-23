@@ -2,6 +2,10 @@ library(simmer)
 library(simmer.plot)
 library(gridExtra)
 library(parallel)
+library(rstudioapi)
+current_path <- getActiveDocumentContext()$path 
+# The next line set the working directory to the relevant one:
+setwd(dirname(current_path ))
 
 set.seed(1234)
 
@@ -89,20 +93,34 @@ singleQueue <- function(lambda = 1, mu = 1){
   
 }
 
-# r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
 #####################################
 #  Fila sem Prioridade - Cenário 1  #
 #####################################
 lambdas=c(0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9)
 mu=1
 n=length(lambdas)
-for(i in 1:n){
-  q <- numeric()
-  q[i] <- singleQueue(lambda = lambdas[i], mu = mu)
-  s_r <- data.frame(q[i])
+
+#inicialiando o DataFrame
+c1 = singleQueue(lambda = lambdas[1], mu = mu)
+novo_frame <- data.frame("lambda"=lambdas[1],"E.W"=c1$mean_waiting_time,"E.Nq."=c1$mean_queue)
+#realizando os experimentos restantes
+for(i in 2:n){
+  c1 = singleQueue(lambda = lambdas[i], mu = mu)
+  novo_frame[i,]<- data.frame("lambda"=lambdas[i],c1$mean_waiting_time,c1$mean_queue)
 }
-#plot(lambdas, s_r$mean_waiting_time, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 5, main="Teste de Plot", col="red")
 
+#Carregar dados analiticos
+anal_c1 <- read.csv(file="cenario1.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+head(anal_c1)
 
+#Plotar os gráficos
+plot(novo_frame$lambda,novo_frame$E.W, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Fila sem Prioridade - Cenário 1", col="red")
+lines(novo_frame$lambda,anal_c1$E.W, col="blue",lwd = 3)
+legend("topleft", c("Simulação","Analítico"),fill=c("red","blue"))
+#Resultado do Cenário 1 sem prioridade
+novo_frame
 
-
+#####################################
+#  Fila sem Prioridade - Cenário 1  #
+#####################################
+# r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
