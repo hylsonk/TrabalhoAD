@@ -3,8 +3,8 @@ library(simmer.plot)
 library(gridExtra)
 library(parallel)
 library(rstudioapi)
+#Setando a localização dos arquivos, importante para importar as planilhas
 current_path <- getActiveDocumentContext()$path 
-# The next line set the working directory to the relevant one:
 setwd(dirname(current_path ))
 
 set.seed(1234)
@@ -23,14 +23,15 @@ doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, prior
       timeout(function(){rexp(1, mu2)}) %>%
       release("server")
     
-    server <- mclapply(1:5000, function(i) {
+    server <- mclapply(1:100, function(i) {
       simmer("server") %>%
       add_resource("server") %>%
       add_generator("Customer", customer, function() {rexp(1, lambda1)}) %>%
+      
       add_generator("Custome with priority", priorityCustomer, function() {rexp(1, lambda2)}, priority = priorityQueue) %>%
       run(100)
     }, mc.set.seed=FALSE)
-    
+      get_queue_size(server, "server")
       print("----------------------------CUSTOMES----------------------------------")
       print("arrivals")
       arrivals <- get_mon_arrivals(server)
@@ -43,6 +44,7 @@ doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, prior
       
       
       print("--------------------------------------------------------------")
+      
     
 }
 
@@ -121,6 +123,21 @@ legend("topleft", c("Simulação","Analítico"),fill=c("red","blue"))
 novo_frame
 
 #####################################
-#  Fila sem Prioridade - Cenário 1  #
+#  Fila sem Prioridade - Cenário 2  #
 #####################################
-# r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
+#r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
+lambdas1=c(0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6)
+mu1=1
+lambdas2=c(0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2)
+mi2=0.5
+n=length(lambdas1)
+
+#ler dados analíticos
+anal_c2 <- read.csv(file="cenario2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+head(anal_c2)
+
+#plotar analitico
+plot(anal_c2$lambda1, anal_c2$E.W1, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Analitico s/ pri - Cenário 2", col="red")
+plot(anal_c2$Lambda2, anal_c2$E.W2, type='h',col="blue",lwd = 3)
+legend("topleft", c("A_Fila1", "A_Fila2"),fill=c("red", "blue"))
+layout(1)
