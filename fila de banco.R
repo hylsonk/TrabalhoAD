@@ -3,7 +3,7 @@ library(simmer.plot)
 library(gridExtra)
 library(parallel)
 library(rstudioapi)
-#Setando a localização dos arquivos, importante para importar as planilhas
+#Setando a localizaï¿½ï¿½o dos arquivos, importante para importar as planilhas
 current_path <- getActiveDocumentContext()$path 
 setwd(dirname(current_path ))
 
@@ -59,7 +59,7 @@ singleQueue <- function(lambda = 1, mu = 1){
       simmer("server") %>%
         add_resource("server") %>%
         add_generator("Customer", customer, function() {rexp(1, lambda)}) %>%
-        run(100/lambda)
+        run(2000)
       
     }, mc.set.seed=FALSE)
     
@@ -96,7 +96,7 @@ singleQueue <- function(lambda = 1, mu = 1){
 }
 
 #####################################
-#  Fila sem Prioridade - Cenário 1  #
+#  Fila sem Prioridade - Cenï¿½rio 1  #
 #####################################
 lambdas=c(0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9)
 mu=1
@@ -115,15 +115,15 @@ for(i in 2:n){
 anal_c1 <- read.csv(file="cenario1.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 head(anal_c1)
 
-#Plotar os gráficos
-plot(novo_frame$lambda,novo_frame$E.W, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Fila sem Prioridade - Cenário 1", col="red")
+#Plotar os grï¿½ficos
+plot(novo_frame$lambda,novo_frame$E.W, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Fila sem Prioridade - Cenï¿½rio 1", col="red")
 lines(novo_frame$lambda,anal_c1$E.W, col="blue",lwd = 3)
-legend("topleft", c("Simulação","Analítico"),fill=c("red","blue"))
-#Resultado do Cenário 1 sem prioridade
+legend("topleft", c("Simulaï¿½ï¿½o","Analï¿½tico"),fill=c("red","blue"))
+#Resultado do Cenï¿½rio 1 sem prioridade
 novo_frame
 
 #####################################
-#  Fila sem Prioridade - Cenário 2  #
+#  Fila sem Prioridade - Cenï¿½rio 2  #
 #####################################
 #r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
 lambdas1=c(0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6)
@@ -132,12 +132,12 @@ lambdas2=c(0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2)
 mi2=0.5
 n=length(lambdas1)
 
-#ler dados analíticos
+#ler dados analï¿½ticos
 anal_c2 <- read.csv(file="cenario2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 head(anal_c2)
 
 #plotar analitico
-plot(anal_c2$lambda1, anal_c2$E.W1, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Analitico s/ pri - Cenário 2", col="red")
+plot(anal_c2$lambda1, anal_c2$E.W1, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Analitico s/ pri - Cenï¿½rio 2", col="red")
 plot(anal_c2$Lambda2, anal_c2$E.W2, type='h',col="blue",lwd = 3)
 legend("topleft", c("A_Fila1", "A_Fila2"),fill=c("red", "blue"))
 layout(1)
