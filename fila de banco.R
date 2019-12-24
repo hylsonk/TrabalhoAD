@@ -29,22 +29,40 @@ doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, prior
       add_generator("Customer", customer, function() {rexp(1, lambda1)}) %>%
       
       add_generator("Custome with priority", priorityCustomer, function() {rexp(1, lambda2)}, priority = priorityQueue) %>%
-      run(100)
+      run(2000)
     }, mc.set.seed=FALSE)
       get_queue_size(server, "server")
-      print("----------------------------CUSTOMES----------------------------------")
-      print("arrivals")
-      arrivals <- get_mon_arrivals(server)
-      print(transform(arrivals, waiting_time = end_time - start_time - activity_time))
       
       print("----------------------------SERVER----------------------------------")
       print("resources")
       resources <- get_mon_resources(server)
+      # dplyr::group_by(replication)
       print(transform(resources))
       
       
-      print("--------------------------------------------------------------")
+      print("---------------------------MEANS-----------------------------------")
+      mean_waiting_time <- mean(arrivals$waiting_time)
       
+      print(paste0("E[W] = ", mean_waiting_time))
+      
+      mean_queue <- mean(resources$queue)
+      
+      print(paste0("E[Nq] = ", mean_queue))
+      
+      mean_x <- mean(arrivals$activity_time)
+      
+      print(paste0("E[X] = ", mean_x))
+      
+      mean_n <- mean(resources$system)
+      
+      print(paste0("E[N] = ", mean_n))
+      
+      mean_t <- mean(arrivals$execution_time)
+      
+      print(paste0("E[T] = ", mean_t))
+      
+      print("--------------------------------------------------------------")
+      return(data.frame(mean_waiting_time, mean_queue, mean_x, mean_n, mean_t))
     
 }
 
@@ -69,7 +87,8 @@ singleQueue <- function(lambda = 1, mu = 1){
     arrivals <- get_mon_arrivals(server) %>%
       # dplyr::group_by(replication) %>%
       # dplyr::summarise( mean = mean(end_time - start_time))  %>%
-      transform(waiting_time = end_time - start_time - activity_time)
+      transform(waiting_time = end_time - start_time - activity_time) %>%
+      transform(execution_time = end_time - start_time)
     print(arrivals)
     # print(t.test(arrivals[["mean"]]))
     
@@ -90,8 +109,20 @@ singleQueue <- function(lambda = 1, mu = 1){
     
     print(paste0("E[Nq] = ", mean_queue))
     
+    mean_x <- mean(arrivals$activity_time)
+    
+    print(paste0("E[X] = ", mean_x))
+    
+    mean_n <- mean(resources$system)
+    
+    print(paste0("E[N] = ", mean_n))
+    
+    mean_t <- mean(arrivals$execution_time)
+    
+    print(paste0("E[T] = ", mean_t))
+    
     print("--------------------------------------------------------------")
-    return(data.frame(mean_waiting_time, mean_queue))
+    return(data.frame(mean_waiting_time, mean_queue, mean_x, mean_n, mean_t))
   
 }
 
@@ -104,7 +135,7 @@ n=length(lambdas)
 
 #inicialiando o DataFrame
 c1 = singleQueue(lambda = lambdas[1], mu = mu)
-novo_frame <- data.frame("lambda"=lambdas[1],"E.W"=c1$mean_waiting_time,"E.Nq."=c1$mean_queue)
+novo_frame <- data.frame("lambda"=lambdas[1],"E.W"=c1$mean_waiting_time,"E.Nq."=c1$mean_queue, "E.N " = c1$mean_n,"E.X " = c1$mean_x, "E.T " = c1$mean_t)
 #realizando os experimentos restantes
 for(i in 2:n){
   c1 = singleQueue(lambda = lambdas[i], mu = mu)
