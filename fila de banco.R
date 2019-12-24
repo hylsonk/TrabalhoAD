@@ -150,6 +150,7 @@ head(anal_c1)
 plot(novo_frame$lambda,novo_frame$E.W, type='l', ylab = 'E[W]', xlab = 'lambda',lwd = 3, main="Fila sem Prioridade - Cen�rio 1", col="red")
 lines(novo_frame$lambda,anal_c1$E.W, col="blue",lwd = 3)
 legend("topleft", c("Simula��o","Anal�tico"),fill=c("red","blue"))
+
 #Resultado do Cen�rio 1 sem prioridade
 novo_frame
 
