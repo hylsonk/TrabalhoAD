@@ -9,7 +9,7 @@ setwd(dirname(current_path ))
 
 set.seed(1234)
 
-doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, priorityQueue = 0){
+doubleQueue <- function(lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, priorityQueue = 0){
   
     customer <-
       trajectory("Customer's path") %>%
@@ -31,7 +31,16 @@ doubleQueue <- function(n = 1, lambda1 = 1, lambda2 = 1, mu1 = 1, mu2 = 1, prior
       add_generator("Custome with priority", priorityCustomer, function() {rexp(1, lambda2)}, priority = priorityQueue) %>%
       run(2000)
     }, mc.set.seed=FALSE)
-      get_queue_size(server, "server")
+      
+      print("----------------------------CUSTOMER----------------------------------")
+      print("arrivals")
+      arrivals <- get_mon_arrivals(server) %>%
+        # dplyr::group_by(replication) %>%
+        # dplyr::summarise( mean = mean(end_time - start_time))  %>%
+        transform(waiting_time = end_time - start_time - activity_time) %>%
+        transform(execution_time = end_time - start_time)
+      print(arrivals)
+      # print(t.test(arrivals[["mean"]]))
       
       print("----------------------------SERVER----------------------------------")
       print("resources")
@@ -156,7 +165,8 @@ novo_frame
 #####################################
 #  Fila sem Prioridade - Cen�rio 2  #
 #####################################
-#r <-doubleQueue(n = 10, lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
+r <-doubleQueue(lambda1 = 0.05, lambda2 = 0.2 , mu1 = 1, mu2 = 0.5, priorityQueue = 1)
+r
 lambdas1=c(0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6)
 mu1=1
 lambdas2=c(0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2)
